@@ -1,0 +1,31 @@
+
+make sure python is added to path variable, both user path and system path
+test by opening python in CMD
+
+create new folder for the app
+
+reate environemt
+python -m venv C:\Users\user\Projects_apps\Python_hopforward_sentiment
+
+activate environment
+CD C:\Users\user\Projects_apps\Python_hopforward_sentiment\Scripts
+
+activate
+
+in code, make sure its using the environemt
+CTRL ALT P : python: select interpreter , navigate to C:\Users\user\Projects_apps\Python_hopforward_sentiment\Scripts\python.exe
+
+in ms code source control, click the use gitlab button
+
+
+Using older version of python
+
+-install version of python
+-pip install virtualenv
+
+virtualenv --python=C:\Users\user\AppData\Local\Programs\Python\Python38-32\python.exe C:\Users\user\Projects_apps\python_hopforward_scrape
+
+
+getting vader_lexicon
+python -m nltk.downloader vader_lexicon
+
