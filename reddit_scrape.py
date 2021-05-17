@@ -10,6 +10,17 @@ import store
 import database
 import sys
 
+from IPython import display
+import math
+from pprint import pprint
+import pandas as pd
+import numpy as np
+import nltk
+import matplotlib.pyplot as plt
+import seaborn as sns
+from praw.models import MoreComments
+from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
+
 
 myconnection = database.azure_db_connect()
 cursor = myconnection.cursor()
@@ -29,15 +40,19 @@ subs = ['beer',
 'homebrews']
 
 
-# get 10 hot posts from the wallstreetbest subreddit
+# Tally up beer style mentions + Sentiment
 
 found_beers = []
 beer_tally = []
 beer_tally_name = ()
 beer_tally_volume = ()
 
+sns.set(style='darkgrid', context='talk', palette='Dark2')
+headlines = set()
+headlineslist = []
+
 for sub in subs:
-    hot_posts = reddit.subreddit(sub).hot(limit=1000)
+    hot_posts = reddit.subreddit(sub).hot(limit=10)
     for post in hot_posts:
         for beer in beer_list:
             #print(beer)
@@ -45,9 +60,47 @@ for sub in subs:
             if beer.casefold() in post.title.casefold():
                found_beers.append(beer)
 
+               headlineslist.append(tuple([beer.casefold(),post.title]))
+               #display.clear_output()
+
+
+sia = SIA()
+results = []
+dfappend=pd.DataFrame()
+
+for beer in beer_list:
+    for style, titles in headlineslist:
+        if style.casefold() == beer.casefold():
+            headlines.add(titles)
+            #print(titles)
+
+    for line in headlines:
+        pol_score = sia.polarity_scores(line)
+        pol_score['headline'] = line
+        results.append(pol_score)
+    
+    if results:
+        df = pd.DataFrame.from_records(results)
+        df['style'] = beer
+        dfappend = dfappend.append(df)
+        #df.head()
+    headlines.clear()
+    results.clear()
+
+dfappend.head()
+
+#get average score by beer style
+dfappend.groupby(['style']).mean()
+
+#get the tally
 for i in Counter(found_beers):
     beer_tally.append((i, Counter(found_beers)[i]))
 
+df = pd.DataFrame.from_records(beer_tally)
+df.columns=['style','vol']
+
+#combine tally and sentiment
+tally_sentiment = dfappend.merge(df, on='style', how='left')  
 
 execute_query = """insert into hop.beer_style_tally(style, volume)
                 values (?, ?)"""
@@ -56,6 +109,8 @@ cursor.executemany(execute_query,beer_tally)
 myconnection.commit()
 
 print(beer_tally)
+#df = pd.DataFrame.from_records(results)
+#df.head()
 
 
 
