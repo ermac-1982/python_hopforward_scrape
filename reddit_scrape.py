@@ -90,7 +90,7 @@ for beer in beer_list:
 dfappend.head()
 
 #get average score by beer style
-dfappend.groupby(['style']).mean()
+dfappend=dfappend.groupby(['style']).mean()
 
 #get the tally
 for i in Counter(found_beers):
@@ -102,13 +102,15 @@ df.columns=['style','vol']
 #combine tally and sentiment
 tally_sentiment = dfappend.merge(df, on='style', how='left')  
 
-execute_query = """insert into hop.beer_style_tally(style, volume)
-                values (?, ?)"""
 
-cursor.executemany(execute_query,beer_tally)
+#send to database
+execute_query = """insert into hop.beer_style_tally_sent(style, neg, neu, pos,compound, volume)
+                values (?, ?, ?, ?, ?, ?)"""
+
+cursor.executemany(execute_query,tally_sentiment.values.tolist())
 myconnection.commit()
 
-print(beer_tally)
+print(tally_sentiment)
 #df = pd.DataFrame.from_records(results)
 #df.head()
 
