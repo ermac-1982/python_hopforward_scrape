@@ -1,7 +1,7 @@
 import praw
 import pandas as pd
 from praw.models import MoreComments
-from seek_lists import beer_list
+from seek_lists import brand_list
 reddit = praw.Reddit(client_id='DxRCwrqNJbnM9Q', client_secret='dbveQKIycUkfVwpytk69EPIJCy1x-Q', user_agent='hopforward')
 from collections import Counter
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
@@ -40,7 +40,7 @@ subs = ['beer',
 'homebrews']
 
 
-# Tally up beer style mentions + Sentiment
+# Tally up brand style mentions + Sentiment
 
 found_beers = []
 beer_tally = []
@@ -52,9 +52,9 @@ headlines = set()
 headlineslist = []
 
 for sub in subs:
-    hot_posts = reddit.subreddit(sub).new(limit=1000)
+    hot_posts = reddit.subreddit(sub).submissions(start=1456790400, end=1459468800)
     for post in hot_posts:
-        for beer in beer_list:
+        for beer in brand_list:
             #print(beer)
             #print(post.title)
             if beer.casefold() in post.title.casefold():
@@ -68,7 +68,7 @@ sia = SIA()
 results = []
 dfappend=pd.DataFrame()
 
-for beer in beer_list:
+for beer in brand_list:
     for style, titles in headlineslist:
         if style.casefold() == beer.casefold():
             headlines.add(titles)
@@ -104,7 +104,7 @@ tally_sentiment = dfappend.merge(df, on='style', how='left')
 
 
 #send to database
-execute_query = """insert into hop.beer_style_tally_sent(style, neg, neu, pos,compound, volume)
+execute_query = """insert into hop.beer_brand_tally_sent(brand, neg, neu, pos,compound, volume)
                 values (?, ?, ?, ?, ?, ?)"""
 
 cursor.executemany(execute_query,tally_sentiment.values.tolist())
@@ -113,7 +113,6 @@ myconnection.commit()
 print(tally_sentiment)
 #df = pd.DataFrame.from_records(results)
 #df.head()
-
 
 
 
