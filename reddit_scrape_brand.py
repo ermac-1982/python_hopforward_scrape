@@ -58,6 +58,11 @@ sns.set(style='darkgrid', context='talk', palette='Dark2')
 headlines = set()
 headlineslist = []
 
+hot_topics = []
+controversial_topics = []
+
+#get new posts
+
 for sub in subs:
     hot_posts = reddit.subreddit(sub).new(limit=1000)
     for post in hot_posts:
@@ -65,11 +70,33 @@ for sub in subs:
             #print(beer)
             #print(post.title)
             if beer.casefold() in post.title.casefold():
-               found_beers.append(beer)
+                found_beers.append(beer)
 
-               headlineslist.append(tuple([beer.casefold(),post.title]))
-               #display.clear_output()
+                headlineslist.append(tuple([beer.casefold(),post.title]))
+                #display.clear_output()
 
+#get hot posts
+
+for sub in subs:
+    hot_posts = reddit.subreddit(sub).hot(limit=1000)
+    for post in hot_posts:
+        for beer in brand_list:
+            #print(beer)
+            #print(post.title)
+            if beer.casefold() in post.title.casefold():
+                hot_topics.append((beer, post.url, post.title))
+
+
+#get controversial
+
+for sub in subs:
+    hot_posts = reddit.subreddit(sub).controversial(limit=1000)
+    for post in hot_posts:
+        for beer in brand_list:
+            #print(beer)
+            #print(post.title)
+            if beer.casefold() in post.title.casefold():
+                controversial_topics.append((beer, post.url, post.title))
 
 sia = SIA()
 results = []
@@ -114,10 +141,16 @@ tally_sentiment = dfappend.merge(df, on='style', how='left')
 execute_query = """insert into hop.beer_brand_tally_sent(brand, neg, neu, pos,compound, volume)
                 values (?, ?, ?, ?, ?, ?)"""
 
+hot_topics_query = """ insert into hop.beer_brand_hot_topics(brand, posturl, content) values (?, ?, ?)"""
+cont_topics_query = """ insert into hop.beer_brand_cont_topics(brand, posturl, content) values (?, ?, ?)"""
+
 cursor.executemany(execute_query,tally_sentiment.values.tolist())
+cursor.executemany(hot_topics_query,hot_topics)
+cursor.executemany(cont_topics_query,controversial_topics)
 myconnection.commit()
 
 print(tally_sentiment)
+
 #df = pd.DataFrame.from_records(results)
 #df.head()
 
@@ -153,16 +186,16 @@ print(tally_sentiment)
 #        continue
 #    print(top_level_comment.body)
 
-posts = reddit.subreddit('wallstreetbets')
-resp = posts.search('GME MEGATHREAD', limit=100)
+#posts = reddit.subreddit('wallstreetbets')
+#resp = posts.search('GME MEGATHREAD', limit=100)
 
-for post in resp:
+#for post in resp:
     #print(post.id)
     #postid = post.id
-    submission = reddit.submission(id=post.id)
-    for top_level_comment in submission.comments:
-        if isinstance(top_level_comment, MoreComments):
-            continue
-        if top_level_comment.body.startswith("Jim Cramer"):
-            if "\n" not in top_level_comment.body:
-                print(top_level_comment.body)
+#    submission = reddit.submission(id=post.id)
+#    for top_level_comment in submission.comments:
+#        if isinstance(top_level_comment, MoreComments):
+#            continue
+#        if top_level_comment.body.startswith("Jim Cramer"):
+#            if "\n" not in top_level_comment.body:
+#                print(top_level_comment.body)

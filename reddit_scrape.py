@@ -51,6 +51,9 @@ sns.set(style='darkgrid', context='talk', palette='Dark2')
 headlines = set()
 headlineslist = []
 
+hot_topics = []
+controversial_topics = []
+
 for sub in subs:
     hot_posts = reddit.subreddit(sub).new(limit=1000)
     for post in hot_posts:
@@ -62,6 +65,31 @@ for sub in subs:
 
                headlineslist.append(tuple([beer.casefold(),post.title]))
                #display.clear_output()
+
+
+#get hot posts
+
+for sub in subs:
+    hot_posts = reddit.subreddit(sub).hot(limit=1000)
+    for post in hot_posts:
+        for beer in beer_list:
+            #print(beer)
+            #print(post.title)
+            if beer.casefold() in post.title.casefold():
+                hot_topics.append((beer, post.url, post.title))
+
+
+#get controversial
+
+for sub in subs:
+    hot_posts = reddit.subreddit(sub).controversial(limit=1000)
+    for post in hot_posts:
+        for beer in beer_list:
+            #print(beer)
+            #print(post.title)
+            if beer.casefold() in post.title.casefold():
+                controversial_topics.append((beer, post.url, post.title))
+
 
 
 sia = SIA()
@@ -107,7 +135,13 @@ tally_sentiment = dfappend.merge(df, on='style', how='left')
 execute_query = """insert into hop.beer_style_tally_sent(style, neg, neu, pos,compound, volume)
                 values (?, ?, ?, ?, ?, ?)"""
 
+hot_topics_query = """ insert into hop.beer_style_hot_topics(style, posturl, content) values (?, ?, ?)"""
+cont_topics_query = """ insert into hop.beer_style_cont_topics(style, posturl, content) values (?, ?, ?)"""
+
 cursor.executemany(execute_query,tally_sentiment.values.tolist())
+cursor.executemany(hot_topics_query,hot_topics)
+cursor.executemany(cont_topics_query,controversial_topics)
+
 myconnection.commit()
 
 print(tally_sentiment)
