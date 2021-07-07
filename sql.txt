@@ -1,0 +1,52 @@
+create table hop.beer_brand_tally_sent(
+    beer_id  int identity PRIMARY KEY, 
+    brand varchar(30) not null, 
+    volume int not null,
+    neg FLOAT not null,
+    neu FLOAT not null,
+    pos FLOAT not null,
+    compound FLOAT not null, 
+    created_datetime DATETIME DEFAULT(GETDATE()),
+    );
+
+    create table hop.beer_style_tally_sent(
+    beer_id  int identity PRIMARY KEY, 
+    style varchar(30) not null, 
+    volume int not null,
+    neg FLOAT not null,
+    neu FLOAT not null,
+    pos FLOAT not null,
+    compound FLOAT not null, 
+    created_datetime DATETIME DEFAULT(GETDATE()),
+    );
+    create table hop.beer_brand_hot_topics(
+    topic_id  int identity PRIMARY KEY, 
+    brand varchar(30) not null, 
+    postid varchar(30) not null,
+    content varchar(200) not null,
+    created_datetime DATETIME DEFAULT(GETDATE()),
+    );
+
+    create table hop.beer_brand_cont_topics(
+    topic_id  int identity PRIMARY KEY, 
+    brand varchar(30) not null, 
+    postid varchar(30) not null,
+    content varchar(200) not null,
+    created_datetime DATETIME DEFAULT(GETDATE()),
+    );
+
+    create table hop.beer_style_hot_topics(
+    topic_id  int identity PRIMARY KEY, 
+    brand varchar(30) not null, 
+    postid varchar(30) not null,
+    content varchar(200) not null,
+    created_datetime DATETIME DEFAULT(GETDATE()),
+    );
+
+    create table hop.beer_style_cont_topics(
+    topic_id  int identity PRIMARY KEY, 
+    brand varchar(30) not null, 
+    postid varchar(30) not null,
+    content varchar(200) not null,
+    created_datetime DATETIME DEFAULT(GETDATE()),
+    );

@@ -20,6 +20,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from praw.models import MoreComments
 from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
+import datetime
+import time
+
+from_date = time.mktime(datetime.datetime(2021, 1, 1).timetuple())
+to_date = time.mktime(datetime.datetime(2021, 2, 1).timetuple())
 
 
 myconnection = database.azure_db_connect()
@@ -42,6 +47,8 @@ subs = ['beer',
 
 # Tally up brand style mentions + Sentiment
 
+
+
 found_beers = []
 beer_tally = []
 beer_tally_name = ()
@@ -52,7 +59,7 @@ headlines = set()
 headlineslist = []
 
 for sub in subs:
-    hot_posts = reddit.subreddit(sub).submissions(start=1456790400, end=1459468800)
+    hot_posts = reddit.subreddit(sub).new(limit=1000)
     for post in hot_posts:
         for beer in brand_list:
             #print(beer)
