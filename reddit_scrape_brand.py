@@ -40,7 +40,6 @@ subs = ['beer',
 'beerporn',
 'TheBrewery',
 'CraftBeer',
-'beermoney',
 'homebrew',
 'homebrews']
 
@@ -84,7 +83,7 @@ for sub in subs:
             #print(beer)
             #print(post.title)
             if beer.casefold() in post.title.casefold():
-                hot_topics.append((beer, post.url, post.title))
+                hot_topics.append((beer, post.permalink, post.title))
 
 
 #get controversial
@@ -96,7 +95,7 @@ for sub in subs:
             #print(beer)
             #print(post.title)
             if beer.casefold() in post.title.casefold():
-                controversial_topics.append((beer, post.url, post.title))
+                controversial_topics.append((beer, post.permalink, post.title))
 
 sia = SIA()
 results = []
