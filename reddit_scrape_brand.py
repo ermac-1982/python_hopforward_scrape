@@ -26,8 +26,8 @@ import time
 #from_date = time.mktime(datetime.datetime(2021, 1, 1).timetuple())
 #to_date = time.mktime(datetime.datetime(2021, 2, 1).timetuple())
 
-datetime_object_start = datetime.date(2021, 4, 1)
-datetime_object_end = datetime.date(2021, 4, 30)
+datetime_object_start = datetime.date(2021, 8, 1)
+datetime_object_end = datetime.date(2021, 8, 31)
 
 myconnection = database.azure_db_connect()
 cursor = myconnection.cursor()

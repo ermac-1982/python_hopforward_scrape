@@ -18,4 +18,5 @@ def azure_db_connect():
     else:
         return db
 
-azure_db_connect()
+if __name__ == '__main__':
+    azure_db_connect()
